@@ -17,3 +17,12 @@ updates:
       prefix: "chore"
     assignees:
       - "netwatching/devops"
+
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    commit-message:
+      prefix: "chore"
+    assignees:
+      - "netwatching/devops"
