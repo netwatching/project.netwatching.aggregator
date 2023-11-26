@@ -10,3 +10,5 @@ FROM alpine
 
 COPY --from=builder /usr/local/cargo/bin/netwatching-aggregator /usr/local/bin/netwatching-aggregator
 CMD ["netwatching-aggregator"]
+
+HEALTHCHECK --start-period=3s --interval=3s --timeout=3s CMD exit 0
