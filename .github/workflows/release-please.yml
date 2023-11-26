@@ -1,0 +1,22 @@
+on:
+  push:
+    branches:
+      - main
+      - 'support/**'
+
+name: Release Please
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    name: Release Please
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        with:
+          command: manifest
+          default-branch: ${{ github.ref_name }}
+          token: ${{ secrets.GITHUB_TOKEN }}

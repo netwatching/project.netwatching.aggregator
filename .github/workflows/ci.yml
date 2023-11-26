@@ -1,0 +1,84 @@
+name: Docker
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+
+jobs:
+  # Setup --------------------------------------------------------
+  setup:
+    runs-on: ubuntu-latest
+    name: Setup
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check Dockerfile for HEALTHCHECK
+        run: |
+          if ! grep -q "HEALTHCHECK" ./Dockerfile; then
+            echo "::error::No HEALTHCHECK instruction found in Dockerfile - exiting..."
+            exit 1
+          else
+            echo "::notice::HEALTHCHECK instruction found in Dockerfile - proceeding..."
+          fi
+
+      - name: Notifiy push
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "::warning::Image will be pushed after successful build..."
+          else
+            echo "::warning::Image will not be pushed - only tags will be pushed..."
+          fi
+
+  # Naming -------------------------------------------------------
+  name:
+    runs-on: ubuntu-latest
+    name: Name
+    outputs:
+      name: ${{ steps.name.outputs.name }}
+    steps:
+    - name: Create image name
+      id: name
+      run: |
+        ORIGINAL_NAME=${{ github.repository }}
+        CLEAN_NAME=$(echo "$ORIGINAL_NAME" | sed 's/^[^/]*\///' | tr './' '--' | awk '{print tolower($0)}')
+        echo "::notice::Docker image name is $CLEAN_NAME"
+        echo "name=$CLEAN_NAME" >> "$GITHUB_OUTPUT"
+
+  # Push --------------------------------------------------------
+  push:
+    runs-on: ubuntu-latest
+    name: Push
+    needs: [setup, name]
+    strategy:
+      fail-fast: true
+      matrix:
+        arch:
+          - linux/amd64
+          - linux/arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Push
+        uses: netwatching/action.docker.push@v2.2.0
+        with:
+          name: ${{ needs.name.outputs.name }}
+          arch: ${{ matrix.arch }}
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
+
+  # Merge --------------------------------------------------------
+  merge:
+    runs-on: ubuntu-latest
+    if: github.ref_type == 'tag'
+    name: Merge
+    needs: [setup, name, push]
+    steps:
+      - name: Merge
+        uses: netwatching/action.docker.merge@v1.1.8
+        with:
+          name: ${{ needs.name.outputs.name }}
+          registry_password: ${{ secrets.GITHUB_TOKEN }}
+          

@@ -1,0 +1,30 @@
+# Ignore version control directories
+.git/
+.github/
+
+# Ignore temporary and build directories
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.dockerignore
+Dockerfile
+
+# Ignore test directories and files
+tests/
+*.test.py
+test_*.py
+
+# Ignore documentation
+README.md
+LICENSE
+*.tpl
+SECURITY.md
+CHANGELOG.md
+.release-please-manifest.json
+release-please-config.json
+commitlint.config.js
+.czrc
+version.txt
