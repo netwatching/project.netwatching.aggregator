@@ -1,9 +1,12 @@
-FROM ubuntu:23.10 AS base
+FROM rust:1.74-alpine as builder
+WORKDIR /usr/src/myapp
 
-WORKDIR /app
+RUN apk add --no-cache musl-dev binutils
+COPY . .
+RUN cargo install --path .
+RUN strip /usr/local/cargo/bin/netwatching-aggregator
 
-COPY /src/ /app/
+FROM alpine
 
-ENTRYPOINT ["tail", "-f", "/dev/null"]
-
-HEALTHCHECK --start-period=3s --interval=3s --timeout=3s CMD exit 0
+COPY --from=builder /usr/local/cargo/bin/netwatching-aggregator /usr/local/bin/netwatching-aggregator
+CMD ["netwatching-aggregator"]
