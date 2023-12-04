@@ -1,4 +1,4 @@
-FROM ubuntu:23.10 AS base
+FROM ubuntu:24.04 AS base
 
 WORKDIR /app
 
