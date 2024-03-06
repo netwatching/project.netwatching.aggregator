@@ -204,7 +204,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "netregator"
+name = "netwatching-aggregator"
 version = "0.1.0"
 dependencies = [
  "crossbeam-channel",
