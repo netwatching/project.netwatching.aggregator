@@ -12,7 +12,7 @@ jobs:
     name: Setup
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Check Dockerfile for HEALTHCHECK
         run: |
@@ -60,7 +60,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Push
         uses: netwatching/action.docker.push@v2.2.0
